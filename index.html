@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    	<title>Web Clipboard</title>
+<style>
+h1 {
+	text-align: center;	
+}
+
+body {
+	text-align: center;	
+	margin: auto;
+	background-color: whitesmoke;
+}
+
+textarea {
+	margin: auto;
+	width: 50em;
+	max-width: calc(100% - 2em);
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 140px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 150%;
+  left: 50%;
+  margin-left: -75px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+.g-signin2{
+	  width: 100%;
+}
+
+.g-signin2 > div{
+	  margin: 0 auto;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+</style>
+
+    </head>
+    <body>
+	<div id="google-image-div"></div>
+	<h1 id="heading">
+		Web Clipboard
+	</h1>
+	<script src="https://apis.google.com/js/platform.js" async defer></script>
+	<meta name="google-signin-client_id" content="720348569205-min9hsnohjk2711d85hpueak8oc7peuh.apps.googleusercontent.com">
+
+	<textarea id="clipboard" name="clipboard" hidden rows="4" cols="50" oninput="change()">
+	</textarea>
+
+	<div>
+		<div class="g-signin2" data-onsuccess="onSignIn"></div>
+		<button type="button" onclick="signOut();">Sign Out</button>
+		<button type="button" onclick="save();">Save Clipboard</button>
+		<div class="tooltip">
+		<button onclick=copyToLocal() onmouseout=outFunc()">
+			<span class="tooltiptext" id="myTooltip">Click to Copy</span>
+			Copy to Local Clipboard
+		</button>
+		</div>
+		<div id="saving" hidden>Saving...</div>
+		<div id="saved" hidden>Saved!</div>
+	</div>
+
+
+	<script>
+		function signOut() {
+			var auth2 = gapi.auth2.getAuthInstance();
+			auth2.signOut().then(function () {
+				console.log('User signed out.');
+			});
+		}
+
+		function onSignIn(googleUser) {
+	  		var profile = googleUser.getBasicProfile();
+			var id_token = googleUser.getAuthResponse().id_token;
+			document.getElementById("heading").innerHTML = profile.getName() + "'s Web Clipboard";
+			var img = document.createElement("img");
+			img.src = profile.getImageUrl();
+			var src = document.getElementById("google-image-div");
+			src.appendChild(img);
+			var xhr = new XMLHttpRequest();
+
+			xhr.open('POST', 'https://clipboard.waltersmuts.com/backend/sign-in');
+			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			xhr.onload = function() {
+				document.getElementById("clipboard").value = xhr.responseText;
+				document.getElementById("clipboard").hidden = false;
+			};
+			xhr.send('idtoken=' + id_token);
+		}
+
+		function save() {
+			var xhr = new XMLHttpRequest();
+
+			xhr.open('POST', 'https://clipboard.waltersmuts.com/backend/save');
+			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			xhr.onloadstart = function() {
+				document.getElementById("saving").hidden = false;
+				document.getElementById("saved").hidden = true;
+			};
+			xhr.onload = function() {
+				document.getElementById("saving").hidden = true;
+				document.getElementById("saved").hidden = false;
+			};
+			xhr.send('clipboard=' + document.getElementById("clipboard").value);
+		}
+
+		function change() {
+			document.getElementById("saving").hidden = true;
+			document.getElementById("saved").hidden = true;
+		}
+
+		function copyToLocal() {
+			var copyText = document.getElementById("clipboard");
+			copyText.select();
+			copyText.setSelectionRange(0, 99999)
+			document.execCommand("copy");
+			var tooltip = document.getElementById("myTooltip");
+			tooltip.innerHTML = "Copied!";
+
+		}
+
+		function outFunc() {
+	  		var tooltip = document.getElementById("myTooltip");
+	  		tooltip.innerHTML = "Click to Copy";
+		}
+
+
+	</script>
+    </body>
+</html>

@@ -1,0 +1,7 @@
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=walter
+ExecStart=waitress-serve --port=8081 'clipboardbackend:app'
+WorkingDirectory=/var/clipboard/
