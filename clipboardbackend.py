@@ -4,13 +4,26 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from flask import request, jsonify
 import os.path
+import os
 
 app = flask.Flask(__name__)
-app.secret_key = 'superadskj asldj sad secret string'  # Change this!
+
+# Pretty sure much of the security is offloaded to google. So this doesn't do
+# much. But for safety I've initialized it to a random value. A sign-in session
+# doesn't break when this value changes, so I guess it's not really being used
+# here. https://flask.palletsprojects.com/en/1.0.x/quickstart/#sessions
+app.secret_key = os.urandom(16)
+
 clipboard_dir = '/var/clipboard/'
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 app.config["DEBUG"] = False
+
+# This is my CLIENT_ID. Change this to point to your own. Google documentation:
+# https://developers.google.com/identity/protocols/oauth2
+#
+# I've read the documentation linked above and can't find a good reason not to
+# share my CLIENT_ID. If there is a good reason I missed, please let me know.
 CLIENT_ID = "720348569205-min9hsnohjk2711d85hpueak8oc7peuh.apps.googleusercontent.com" 
 
 class User(flask_login.UserMixin):
