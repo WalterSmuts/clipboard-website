@@ -133,7 +133,7 @@ textarea {
 				document.getElementById("saving").hidden = true;
 				document.getElementById("saved").hidden = false;
 			};
-			xhr.send('clipboard=' + document.getElementById("clipboard").value);
+			xhr.send('clipboard=' + encodeURIComponent(document.getElementById("clipboard").value));
 		}
 
 		function change() {
