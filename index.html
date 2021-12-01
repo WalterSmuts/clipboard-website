@@ -82,6 +82,8 @@ textarea {
 		<div class="g-signin2" data-onsuccess="onSignIn"></div>
 		<button type="button" onclick="signOut();">Sign Out</button>
 		<button type="button" onclick="save();">Save Clipboard</button>
+		<button type="button" onclick="save_image();">Save Image</button>
+		<input id="image_file" type="file" onchange="display_image();"/>
 		<div class="tooltip">
 		<button onclick=copyToLocal() onmouseout=outFunc()">
 			<span class="tooltiptext" id="myTooltip">Click to Copy</span>
@@ -92,6 +94,7 @@ textarea {
 		<div id="saved" hidden>Saved!</div>
 	</div>
 
+	<img id="image" hidden/>
 
 	<script>
 		function signOut() {
@@ -116,8 +119,20 @@ textarea {
 			xhr.onload = function() {
 				document.getElementById("clipboard").value = xhr.responseText;
 				document.getElementById("clipboard").hidden = false;
+				get_image();
 			};
 			xhr.send('idtoken=' + id_token);
+		}
+
+		function get_image() {
+			var xhr = new XMLHttpRequest();
+			xhr.open('GET', 'https://clipboard.waltersmuts.com/backend/image');
+			xhr.onload = function() {
+				let image = document.getElementById("image");
+				image.src = xhr.responseURL;
+				document.getElementById('image').hidden = false;
+			};
+			xhr.send();
 		}
 
 		function save() {
@@ -134,6 +149,24 @@ textarea {
 				document.getElementById("saved").hidden = false;
 			};
 			xhr.send('clipboard=' + encodeURIComponent(document.getElementById("clipboard").value));
+		}
+
+		function save_image() {
+			var xhr = new XMLHttpRequest();
+
+			let formData = new FormData();
+			let image = document.getElementById("image_file").files[0];
+			formData.append("image", image);
+			xhr.onloadstart = function() {
+				document.getElementById("saving").hidden = false;
+				document.getElementById("saved").hidden = true;
+			};
+			xhr.onload = function() {
+				document.getElementById("saving").hidden = true;
+				document.getElementById("saved").hidden = false;
+			};
+			xhr.open('POST', 'https://clipboard.waltersmuts.com/backend/save_image');
+			xhr.send(formData);
 		}
 
 		function change() {
@@ -154,6 +187,12 @@ textarea {
 		function outFunc() {
 	  		var tooltip = document.getElementById("myTooltip");
 	  		tooltip.innerHTML = "Click to Copy";
+		}
+
+		function display_image() {
+			let image_file = document.getElementById('image_file');
+			document.getElementById('image').src = window.URL.createObjectURL(image_file.files[0]);
+			document.getElementById('image').hidden = false;
 		}
 
 	</script>

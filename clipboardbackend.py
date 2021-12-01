@@ -3,6 +3,7 @@ import flask_login
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from flask import request, jsonify
+from flask import send_file
 import os.path
 import os
 
@@ -64,6 +65,19 @@ def save():
     clipboard.write(request.form['clipboard'])
     clipboard.close()
     return 'Logged in as: ' + flask_login.current_user.id
+
+@app.route('/backend/save_image', methods=['POST'])
+@flask_login.login_required
+def save_image():
+    image = request.files['image']
+    image.save(clipboard_dir + flask_login.current_user.id + ".image");
+    return 'Logged in as: ' + flask_login.current_user.id
+
+@app.route('/backend/image', methods=['GET'])
+@flask_login.login_required
+def image():
+    print("Attempting to get Image")
+    return send_file(clipboard_dir + flask_login.current_user.id + ".image")
 
 @login_manager.unauthorized_handler
 def unauthorized_handler():
