@@ -83,7 +83,7 @@ textarea {
 		<button type="button" onclick="signOut();">Sign Out</button>
 		<button type="button" onclick="save();">Save Clipboard</button>
 		<button type="button" onclick="save_image();">Save Image</button>
-		<input id="image_file" type="file" onchange="display_image();"/>
+		<input id="image_file" type="file" onchange="display_image_from_selector();"/>
 		<div class="tooltip">
 		<button onclick=copyToLocal() onmouseout=outFunc()">
 			<span class="tooltiptext" id="myTooltip">Click to Copy</span>
@@ -97,6 +97,7 @@ textarea {
 	<img id="image" hidden/>
 
 	<script>
+		var last_image;
 		function signOut() {
 			var auth2 = gapi.auth2.getAuthInstance();
 			auth2.signOut().then(function () {
@@ -155,8 +156,7 @@ textarea {
 			var xhr = new XMLHttpRequest();
 
 			let formData = new FormData();
-			let image = document.getElementById("image_file").files[0];
-			formData.append("image", image);
+			formData.append("image", last_image);
 			xhr.onloadstart = function() {
 				document.getElementById("saving").hidden = false;
 				document.getElementById("saved").hidden = true;
@@ -168,6 +168,13 @@ textarea {
 			xhr.open('POST', 'https://clipboard.waltersmuts.com/backend/save_image');
 			xhr.send(formData);
 		}
+
+		document.onpaste = (paste_event) => {
+			const clipboard = paste_event.clipboardData || window.clipboardData;
+			const file = clipboard.files[0];
+			last_image = file;
+			display_image();
+		};
 
 		function change() {
 			document.getElementById("saving").hidden = true;
@@ -189,9 +196,14 @@ textarea {
 	  		tooltip.innerHTML = "Click to Copy";
 		}
 
-		function display_image() {
+		function display_image_from_selector() {
 			let image_file = document.getElementById('image_file');
-			document.getElementById('image').src = window.URL.createObjectURL(image_file.files[0]);
+			last_image = image_file.files[0];
+			display_image();
+		}
+
+		function display_image(image) {
+			document.getElementById('image').src = window.URL.createObjectURL(last_image);
 			document.getElementById('image').hidden = false;
 		}
 
