@@ -80,12 +80,12 @@ textarea {
 
 	<div>
 		<div class="g-signin2" data-onsuccess="onSignIn"></div>
-		<button type="button" onclick="signOut();">Sign Out</button>
-		<button type="button" onclick="save();">Save Clipboard</button>
-		<button type="button" onclick="save_image();">Save Image</button>
-		<input id="image_file" type="file" onchange="display_image_from_selector();"/>
+		<button type="button" onclick="signOut();" id="signout_button" hidden>Sign Out</button>
+		<button type="button" onclick="save();" id="save_button" hidden>Save Clipboard</button>
+		<button type="button" onclick="save_image();" id="save_image_button" hidden>Save Image</button>
+		<input id="image_file" type="file" onchange="display_image_from_selector();" hidden/>
 		<div class="tooltip">
-		<button onclick=copyToLocal() onmouseout=outFunc()">
+		<button onclick=copyToLocal() onmouseout=outFunc()" hidden>
 			<span class="tooltiptext" id="myTooltip">Click to Copy</span>
 			Copy to Local Clipboard
 		</button>
@@ -100,12 +100,31 @@ textarea {
 		var last_image;
 		function signOut() {
 			var auth2 = gapi.auth2.getAuthInstance();
+
 			auth2.signOut().then(function () {
+				document.getElementById("signout_button").hidden = true;
+				document.getElementById("save_button").hidden = true;
+				document.getElementById("save_image_button").hidden = true;
+				document.getElementById("signout_button").hidden = true;
+				document.getElementById("image_file").hidden = true;
+				document.getElementById("myTooltip").hidden = true;
+				document.getElementById("clipboard").hidden = true;
+				document.getElementById("image").hidden = true;
+				document.getElementById("google-image-div").innerHTML = "";
+
+				document.getElementById("heading").innerHTML = "Web Clipboard";
 				console.log('User signed out.');
 			});
 		}
 
 		function onSignIn(googleUser) {
+			document.getElementById("signout_button").hidden = false;
+			document.getElementById("save_button").hidden = false;
+			document.getElementById("save_image_button").hidden = false;
+			document.getElementById("signout_button").hidden = false;
+			document.getElementById("image_file").hidden = false;
+			document.getElementById("myTooltip").hidden = false;
+
 	  		var profile = googleUser.getBasicProfile();
 			var id_token = googleUser.getAuthResponse().id_token;
 			document.getElementById("heading").innerHTML = profile.getName() + "'s Web Clipboard";
