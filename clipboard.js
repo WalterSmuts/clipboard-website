@@ -1,4 +1,12 @@
 var last_image;
+var saveTimeout;
+
+function change() {
+	document.getElementById("saving").hidden = true;
+	document.getElementById("saved").hidden = true;
+	clearTimeout(saveTimeout);
+	saveTimeout = setTimeout(save, 1000);
+}
 function signOut() {
 	var auth2 = gapi.auth2.getAuthInstance();
 
@@ -92,14 +100,19 @@ function save_image() {
 document.onpaste = (paste_event) => {
 	const clipboard = paste_event.clipboardData || window.clipboardData;
 	const file = clipboard.files[0];
-	last_image = file;
-	display_image();
+	if (file) {
+		last_image = file;
+		display_image();
+		var tooltip = document.getElementById("myTooltip");
+		tooltip.innerHTML = "Image pasted!";
+		tooltip.style.visibility = "visible";
+		tooltip.style.opacity = "1";
+		setTimeout(function() {
+			tooltip.style.visibility = "hidden";
+			tooltip.style.opacity = "0";
+		}, 2000);
+	}
 };
-
-function change() {
-	document.getElementById("saving").hidden = true;
-	document.getElementById("saved").hidden = true;
-}
 
 function copyToLocal() {
 	var copyText = document.getElementById("clipboard");
