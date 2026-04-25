@@ -8,6 +8,7 @@ import os.path
 import os
 
 app = flask.Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10 MB upload limit
 
 # Pretty sure much of the security is offloaded to google. So this doesn't do
 # much. But for safety I've initialized it to a random value. A sign-in session
