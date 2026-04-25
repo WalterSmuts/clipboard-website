@@ -7,39 +7,30 @@ function change() {
 	clearTimeout(saveTimeout);
 	saveTimeout = setTimeout(save, 1000);
 }
+
 function signOut() {
 	var auth2 = gapi.auth2.getAuthInstance();
 
 	auth2.signOut().then(function () {
-		document.getElementById("signout_button").hidden = true;
-		document.getElementById("save_button").hidden = true;
-		document.getElementById("save_image_button").hidden = true;
-		document.getElementById("signout_button").hidden = true;
-		document.getElementById("image_file").hidden = true;
-		document.getElementById("myTooltip").hidden = true;
+		document.getElementById("button-group").hidden = true;
 		document.getElementById("clipboard").hidden = true;
 		document.getElementById("image").hidden = true;
 		document.getElementById("google-image-div").innerHTML = "";
-
 		document.getElementById("heading").innerHTML = "Web Clipboard";
 		console.log('User signed out.');
 	});
 }
 
 function onSignIn(googleUser) {
-	document.getElementById("signout_button").hidden = false;
-	document.getElementById("save_button").hidden = false;
-	document.getElementById("save_image_button").hidden = false;
-	document.getElementById("signout_button").hidden = false;
-	document.getElementById("image_file").hidden = false;
-	document.getElementById("myTooltip").hidden = false;
+	document.getElementById("button-group").hidden = false;
 
 	var profile = googleUser.getBasicProfile();
 	var id_token = googleUser.getAuthResponse().id_token;
-	document.getElementById("heading").innerHTML = profile.getName() + "'s Web Clipboard";
+	document.getElementById("heading").innerHTML = profile.getName() + "'s Clipboard";
 	var img = document.createElement("img");
 	img.src = profile.getImageUrl();
 	var src = document.getElementById("google-image-div");
+	src.innerHTML = "";
 	src.appendChild(img);
 	var xhr = new XMLHttpRequest();
 
@@ -103,30 +94,30 @@ document.onpaste = (paste_event) => {
 	if (file) {
 		last_image = file;
 		display_image();
-		var tooltip = document.getElementById("myTooltip");
-		tooltip.innerHTML = "Image pasted!";
-		tooltip.style.visibility = "visible";
-		tooltip.style.opacity = "1";
-		setTimeout(function() {
-			tooltip.style.visibility = "hidden";
-			tooltip.style.opacity = "0";
-		}, 2000);
+		var fb = document.getElementById("paste-feedback");
+		fb.innerHTML = "Image pasted!";
+		fb.hidden = false;
+		setTimeout(function() { fb.hidden = true; }, 2000);
 	}
 };
 
 function copyToLocal() {
-	var copyText = document.getElementById("clipboard");
-	copyText.select();
-	copyText.setSelectionRange(0, 99999)
-	document.execCommand("copy");
-	var tooltip = document.getElementById("myTooltip");
-	tooltip.innerHTML = "Copied!";
+	var text = document.getElementById("clipboard").value;
+	if (navigator.clipboard && navigator.clipboard.writeText) {
+		navigator.clipboard.writeText(text);
+	} else {
+		var copyText = document.getElementById("clipboard");
+		copyText.select();
+		copyText.setSelectionRange(0, 99999);
+		document.execCommand("copy");
+	}
+	var fb = document.getElementById("paste-feedback");
+	fb.innerHTML = "Copied to clipboard!";
+	fb.hidden = false;
+	setTimeout(function() { fb.hidden = true; }, 2000);
 }
 
-function outFunc() {
-	var tooltip = document.getElementById("myTooltip");
-	tooltip.innerHTML = "Click to Copy";
-}
+function outFunc() {}
 
 function display_image_from_selector() {
 	let image_file = document.getElementById('image_file');
@@ -134,7 +125,7 @@ function display_image_from_selector() {
 	display_image();
 }
 
-function display_image(image) {
+function display_image() {
 	document.getElementById('image').src = window.URL.createObjectURL(last_image);
 	document.getElementById('image').hidden = false;
 }

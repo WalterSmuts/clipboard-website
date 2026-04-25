@@ -5,35 +5,44 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="icon" href="favicon.png">
 	<link rel="stylesheet" href="styles.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     </head>
     <body>
-	<div id="google-image-div"></div>
-	<h1 id="heading">
-		Web Clipboard
-	</h1>
-	<script src="https://apis.google.com/js/platform.js" async defer></script>
-	<meta name="google-signin-client_id" content="720348569205-min9hsnohjk2711d85hpueak8oc7peuh.apps.googleusercontent.com">
-
-	<textarea id="clipboard" name="clipboard" hidden rows="12" cols="50" oninput="change()">
-	</textarea>
-
-	<div>
-		<div class="g-signin2" data-onsuccess="onSignIn"></div>
-		<button type="button" onclick="signOut();" id="signout_button" hidden>Sign Out</button>
-		<button type="button" onclick="save();" id="save_button" hidden>Save Clipboard</button>
-		<button type="button" onclick="save_image();" id="save_image_button" hidden>Save Image</button>
-		<input id="image_file" type="file" onchange="display_image_from_selector();" hidden/>
-		<div class="tooltip">
-		<button onclick=copyToLocal() onmouseout=outFunc()" hidden>
-			<span class="tooltiptext" id="myTooltip">Click to Copy</span>
-			Copy to Local Clipboard
-		</button>
+	<div class="container">
+	    <div class="card">
+		<div class="header">
+		    <div id="google-image-div" class="avatar"></div>
+		    <h1 id="heading">Web Clipboard</h1>
 		</div>
-		<div id="saving" hidden>Saving...</div>
-		<div id="saved" hidden>Saved!</div>
-	</div>
 
-	<img id="image" hidden/>
+		<script src="https://apis.google.com/js/platform.js" async defer></script>
+		<meta name="google-signin-client_id" content="720348569205-min9hsnohjk2711d85hpueak8oc7peuh.apps.googleusercontent.com">
+
+		<textarea id="clipboard" name="clipboard" hidden rows="12" cols="50" oninput="change()" placeholder="Your clipboard content will appear here...">
+		</textarea>
+
+		<div class="controls">
+		    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+		    <div class="button-group" id="button-group" hidden>
+			<button type="button" onclick="save();" id="save_button" class="btn btn-primary">Save</button>
+			<button type="button" onclick="save_image();" id="save_image_button" class="btn">Save Image</button>
+			<label for="image_file" id="image_file_label" class="btn">Upload Image</label>
+			<input id="image_file" type="file" onchange="display_image_from_selector();" hidden/>
+			<button onclick="copyToLocal()" onmouseout="outFunc()" id="copy_button" class="btn">Copy</button>
+			<button type="button" onclick="signOut();" id="signout_button" class="btn btn-muted">Sign Out</button>
+		    </div>
+		    <div class="status">
+			<span id="saving" hidden>Saving...</span>
+			<span id="saved" hidden>&#10003; Saved</span>
+			<span id="paste-feedback" hidden></span>
+		    </div>
+		</div>
+
+		<img id="image" class="preview-image" hidden/>
+	    </div>
+	</div>
 
 	<script src="clipboard.js"></script>
     </body>
