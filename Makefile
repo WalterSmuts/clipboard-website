@@ -5,6 +5,8 @@ deploy: index.html
 	mkdir -p $(ClipboardDir)
 	chown walter:walter $(ClipboardDir)
 	cp index.html $(DeployDir)
+	cp styles.css $(DeployDir)
+	cp clipboard.js $(DeployDir)
 	cp favicon.png $(DeployDir)
 	cp clipboardbackend.py $(ClipboardDir)
 	cp clipboardbackend.service /etc/systemd/system/
